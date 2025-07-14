@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار رياضيات تفاعلي - الصف الثاني الثانوي</title>
+    <style>
+        :root {
+            --primary: #3498db;
+            --secondary: #2980b9;
+            --correct: #2ecc71;
+            --incorrect: #e74c3c;
+            --light: #ecf0f1;
+            --dark: #2c3e50;
+        }
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 20px;
+            text-align: center;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        h1 {
+            margin: 0;
+        }
+        .quiz-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+            margin-bottom: 20px;
+        }
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px dashed #ddd;
+        }
+        .question-number {
+            font-weight: bold;
+            color: var(--primary);
+        }
+        .question-text {
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+            line-height: 1.7;
+        }
+        .options {
+            margin-bottom: 20px;
+        }
+        .option {
+            background-color: var(--light);
+            padding: 12px 15px;
+            margin-bottom: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 2px solid transparent;
+        }
+        .option:hover {
+            background-color: #d6eaf8;
+            border-color: var(--primary);
+        }
+        .option.selected {
+            border-color: var(--primary);
+            background-color: #d6eaf8;
+        }
+        .option.correct {
+            background-color: var(--correct);
+            color: white;
+            border-color: var(--correct);
+        }
+        .option.incorrect {
+            background-color: var(--incorrect);
+            color: white;
+            border-color: var(--incorrect);
+        }
+        .feedback {
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            display: none;
+        }
+        .feedback.correct {
+            background-color: #e8f8f0;
+            border-left: 4px solid var(--correct);
+            color: var(--correct);
+        }
+        .feedback.incorrect {
+            background-color: #fdedec;
+            border-left: 4px solid var(--incorrect);
+            color: var(--incorrect);
+        }
+        .next-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin-top: 15px;
+            transition: background-color 0.3s;
+            display: none;
+        }
+        .next-btn:hover {
+            background-color: var(--secondary);
+        }
+        .progress-container {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .progress-bar {
+            height: 10px;
+            background-color: var(--primary);
+            border-radius: 10px;
+            width: 0%;
+            transition: width 0.5s;
+        }
+        .score-container {
+            text-align: center;
+            font-size: 1.2rem;
+            margin: 20px 0;
+            display: none;
+        }
+        .restart-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            margin: 20px auto;
+            display: block;
+            transition: background-color 0.3s;
+        }
+        .restart-btn:hover {
+            background-color: var(--secondary);
+        }
+        .math-formula {
+            font-family: 'Arial', sans-serif;
+            font-size: 1.3rem;
+            text-align: center;
+            margin: 15px 0;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            .quiz-container {
+                padding: 15px;
+            }
+            .math-formula {
+                font-size: 1.1rem;
+            }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>اختبار رياضيات تفاعلي</h1>
+            <p>الصف الثاني الثانوي - تدرب على حل المسائل بنفسك</p>
+        </header>
+
+        <div class="progress-container">
+            <div class="progress-bar" id="progressBar"></div>
+        </div>
+
+        <div id="quiz-area">
+            <div class="quiz-container">
+                <div class="question-header">
+                    <span class="question-number">السؤال <span id="currentQuestion">1</span>/<span id="totalQuestions">10</span></span>
+                </div>
+                <div class="question-text" id="questionText"></div>
+                <div class="math-formula" id="mathFormula"></div>
+                <div class="options" id="optionsContainer"></div>
+                <div class="feedback" id="feedback"></div>
+                <button class="next-btn" id="nextBtn">السؤال التالي</button>
+            </div>
+        </div>
+
+        <div class="score-container" id="scoreContainer">
+            <h2>انتهى الاختبار!</h2>
+            <p>درجتك: <span id="finalScore">0</span>/<span id="maxScore">10</span></p>
+            <p id="scoreMessage"></p>
+        </div>
+
+        <button class="restart-btn" id="restartBtn">إعادة الاختبار</button>
+    </div>
+
+    <script>
+        // الأسئلة الرياضية
+        const mathQuestions = [
+            {
+                question: "ما هو حل المعادلة التربيعية: س² - 5س + 6 = 0؟",
+                formula: "x² - 5x + 6 = 0",
+                options: ["{2, 3}", "{-2, -3}", "{1, 6}", "{-1, -6}"],
+                answer: 0,
+                explanation: "الحل: (س-2)(س-3)=0 ⇒ س=2 أو س=3"
+            },
+            {
+                question: "إذا كانت النسبة بين زوايا مثلث هي 2:3:4، فما قياس أكبر زاوية فيه؟",
+                formula: "النسبة 2:3:4",
+                options: ["40°", "60°", "80°", "100°"],
+                answer: 2,
+                explanation: "مجموع النسب 2+3+4=9 أجزاء. مجموع زوايا المثلث 180°، إذن الجزء الواحد = 180/9 = 20°، وأكبر زاوية 4×20=80°"
+            },
+            {
+                question: "ما هو ميل المستقيم المار بالنقطتين (2,3) و (5,7)؟",
+                formula: "النقطتان (2,3) و (5,7)",
+                options: ["1/2", "3/4", "4/3", "2"],
+                answer: 2,
+                explanation: "الميل = (ص2-ص1)/(س2-س1) = (7-3)/(5-2) = 4/3"
+            },
+            {
+                question: "إذا كان طول قطر الدائرة 10 سم، فما مساحتها؟ (ط ≈ 3.14)",
+                formula: "قطر الدائرة = 10 سم",
+                options: ["31.4 سم²", "62.8 سم²", "78.5 سم²", "314 سم²"],
+                answer: 2,
+                explanation: "نصف القطر = 10/2 = 5 سم، المساحة = ط نق² = 3.14 × 25 = 78.5 سم²"
+            },
+            {
+                question: "ما هو حل المتباينة: 3س - 7 < 8؟",
+                formula: "3x - 7 < 8",
+                options: ["س < 5", "س > 5", "س < -5", "س > -5"],
+                answer: 0,
+                explanation: "3س < 8 + 7 ⇒ 3س < 15 ⇒ س < 5"
+            },
+            {
+                question: "ما هو طول الوتر في المثلث القائم الذي طولا ضلعيه القائمين 6 سم و 8 سم؟",
+                formula: "أضلاع القائمة: 6 سم، 8 سم",
+                options: ["10 سم", "12 سم", "14 سم", "16 سم"],
+                answer: 0,
+                explanation: "نظرية فيثاغورس: الوتر² = 6² + 8² = 36 + 64 = 100 ⇒ الوتر = 10 سم"
+            },
+            {
+                question: "ما هو قيمة جتا(60°)؟",
+                formula: "cos(60°)",
+                options: ["0", "1/2", "√2/2", "√3/2"],
+                answer: 1,
+                explanation: "جتا(60°) = 1/2 (من القيم المثلثية الأساسية)"
+            },
+            {
+                question: "إذا كان 3ˣ = 81، فما قيمة س؟",
+                formula: "3ˣ = 81",
+                options: ["3", "4", "9", "27"],
+                answer: 1,
+                explanation: "81 = 3⁴ ⇒ إذن س = 4"
+            },
+            {
+                question: "ما هو محيط مربع مساحته 49 سم²؟",
+                formula: "مساحة المربع = 49 سم²",
+                options: ["7 سم", "14 سم", "28 سم", "49 سم"],
+                answer: 2,
+                explanation: "طول الضلع = √49 = 7 سم، المحيط = 4 × 7 = 28 سم"
+            },
+            {
+                question: "إذا كان س + ص = 8، س - ص = 2، فما قيمة س؟",
+                formula: "س + ص = 8<br>س - ص = 2",
+                options: ["3", "5", "6", "10"],
+                answer: 1,
+                explanation: "بجمع المعادلتين: 2س = 10 ⇒ س = 5"
+            }
+        ];
+
+        // متغيرات التطبيق
+        let currentQuestionIndex = 0;
+        let score = 0;
+        const totalQuestions = mathQuestions.length;
+        let selectedOption = null;
+
+        // عناصر DOM
+        const questionText = document.getElementById('questionText');
+        const mathFormula = document.getElementById('mathFormula');
+        const optionsContainer = document.getElementById('optionsContainer');
+        const feedback = document.getElementById('feedback');
+        const nextBtn = document.getElementById('nextBtn');
+        const currentQuestionEl = document.getElementById('currentQuestion');
+        const totalQuestionsEl = document.getElementById('totalQuestions');
+        const progressBar = document.getElementById('progressBar');
+        const quizArea = document.getElementById('quiz-area');
+        const scoreContainer = document.getElementById('scoreContainer');
+        const finalScore = document.getElementById('finalScore');
+        const maxScore = document.getElementById('maxScore');
+        const scoreMessage = document.getElementById('scoreMessage');
+        const restartBtn = document.getElementById('restartBtn');
+
+        // تهيئة الاختبار
+        function initQuiz() {
+            currentQuestionIndex = 0;
+            score = 0;
+            totalQuestionsEl.textContent = totalQuestions;
+            maxScore.textContent = totalQuestions;
+            loadQuestion();
+            quizArea.style.display = 'block';
+            scoreContainer.style.display = 'none';
+        }
+
+        // تحميل السؤال الحالي
+        function loadQuestion() {
+            const currentQuestion = mathQuestions[currentQuestionIndex];
+            questionText.textContent = currentQuestion.question;
+            mathFormula.innerHTML = currentQuestion.formula;
+            optionsContainer.innerHTML = '';
+            currentQuestionEl.textContent = currentQuestionIndex + 1;
+            
+            // تحديث شريط التقدم
+            progressBar.style.width = `${((currentQuestionIndex + 1) / totalQuestions) * 100}%`;
+            
+            // إنشاء خيارات الإجابة
+            currentQuestion.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.classList.add('option');
+                optionElement.textContent = option;
+                optionElement.dataset.index = index;
+                optionElement.addEventListener('click', selectOption);
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            // إخفاء التغذية الراجعة وزر التالي
+            feedback.style.display = 'none';
+            nextBtn.style.display = 'none';
+        }
+
+        // اختيار إجابة
+        function selectOption(e) {
+            if (feedback.style.display === 'block') return;
+            
+            const selectedIndex = parseInt(e.target.dataset.index);
+            selectedOption = selectedIndex;
+            
+            // إزالة التحديد من جميع الخيارات
+            document.querySelectorAll('.option').forEach(opt => {
+                opt.classList.remove('selected');
+            });
+            
+            // تحديد الخيار المختار
+            e.target.classList.add('selected');
+            
+            // التحقق من الإجابة
+            const currentQuestion = mathQuestions[currentQuestionIndex];
+            const isCorrect = selectedIndex === currentQuestion.answer;
+            
+            // عرض التغذية الراجعة
+            if (isCorrect) {
+                feedback.textContent = 'إجابة صحيحة! ' + currentQuestion.explanation;
+                feedback.classList.remove('incorrect');
+                feedback.classList.add('correct');
+                score++;
+            } else {
+                feedback.textContent = 'إجابة خاطئة. ' + currentQuestion.explanation;
+                feedback.classList.remove('correct');
+                feedback.classList.add('incorrect');
+                
+                // إظهار الإجابة الصحيحة
+                document.querySelectorAll('.option')[currentQuestion.answer].classList.add('correct');
+                e.target.classList.add('incorrect');
+            }
+            
+            feedback.style.display = 'block';
+            nextBtn.style.display = 'block';
+        }
+
+        // الانتقال للسؤال التالي
+        function nextQuestion() {
+            currentQuestionIndex++;
+            
+            if (currentQuestionIndex < totalQuestions) {
+                loadQuestion();
+            } else {
+                endQuiz();
+            }
+        }
+
+        // إنهاء الاختبار
+        function endQuiz() {
+            quizArea.style.display = 'none';
+            scoreContainer.style.display = 'block';
+            finalScore.textContent = score;
+            
+            // عرض رسالة حسب الأداء
+            const percentage = (score / totalQuestions) * 100;
+            if (percentage >= 80) {
+                scoreMessage.textContent = "ممتاز! لديك فهم قوي للمفاهيم الرياضية.";
+            } else if (percentage >= 50) {
+                scoreMessage.textContent = "جيد، ولكن هناك مجال للتحسين. راجع الأخطاء وحاول مرة أخرى.";
+            } else {
+                scoreMessage.textContent = "يحتاج إلى مزيد من الممارسة. راجع الأساسيات وحاول مرة أخرى.";
+            }
+        }
+
+        // إعادة الاختبار
+        function restartQuiz() {
+            initQuiz();
+        }
+
+        // أحداث
+        nextBtn.addEventListener('click', nextQuestion);
+        restartBtn.addEventListener('click', restartQuiz);
+
+        // بدء الاختبار
+        initQuiz();
+    </script>
+</body>
+</html>
